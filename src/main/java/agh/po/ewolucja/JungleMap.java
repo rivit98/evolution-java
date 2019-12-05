@@ -99,11 +99,6 @@ public class JungleMap extends AbstractWorldMap{
 
     @Override
     public void run() {
-        if(animalMap.size() < 2){
-            System.out.println("Koniec symulacji, mniej niz 2 zwierzeta");
-            return;
-        }
-
         //clean dead animals
         animalMap.values().removeIf(a -> a.getEnergy() <= 0); //TODO: send to Harness
 //        animals.removeIf(a -> a.getEnergy() <= 0); //funny bug was here
