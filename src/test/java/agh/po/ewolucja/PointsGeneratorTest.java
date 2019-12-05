@@ -1,15 +1,15 @@
 package agh.po.ewolucja;
 
-import org.junit.Before;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class PointsGeneratorTest {
     JungleMap map;
     PointsGenerator ps;
 
-    @Before
+    @BeforeEach
     public void prepare(){
         map = new JungleMap(new Vector2d(10,10), new Vector2d(2,2));
         ps = new PointsGenerator(map);

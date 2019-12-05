@@ -1,17 +1,12 @@
 package agh.po.ewolucja;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RectangleTest {
     Rectangle r;
     Rectangle r2;
 
-    @Before
+    @BeforeEach
     public void prepare(){
         r = new Rectangle(new Vector2d(0,0), new Vector2d(4,3));
         r2 = new Rectangle(new Vector2d(0,0), new Vector2d(4,3));

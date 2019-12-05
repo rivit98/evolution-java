@@ -31,14 +31,14 @@ public class World {
 
             int iterations = 0;
             while(iterations++ < iterLimit){
-                System.out.println(map);
                 if((cnt % 3) == 0){
+                    System.out.println(map);
                     Harness.getInstance().startSending();
                 }
                 map.run();
                 Harness.getInstance().stopSending();
 
-                //cnt++;
+                cnt++;
             }
         }catch (IllegalArgumentException | IllegalStateException ex){
             System.out.println(ex.getMessage());

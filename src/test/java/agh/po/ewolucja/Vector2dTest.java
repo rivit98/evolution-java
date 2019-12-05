@@ -1,9 +1,9 @@
 package agh.po.ewolucja;
 
-import org.junit.Test;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Vector2dTest {
     @Test

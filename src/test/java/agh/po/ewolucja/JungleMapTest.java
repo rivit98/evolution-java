@@ -1,18 +1,16 @@
 package agh.po.ewolucja;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JungleMapTest {
     JungleMap map;
     JungleMap map2;
     JungleMap map3;
 
-    @Before
+    @BeforeEach
     public void prepare(){
         map = new JungleMap(new Vector2d(100,30), new Vector2d(10, 10));
         map2 = new JungleMap(new Vector2d(5,5), new Vector2d(2,2));

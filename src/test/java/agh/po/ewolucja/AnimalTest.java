@@ -1,10 +1,7 @@
 package agh.po.ewolucja;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AnimalTest {
 
@@ -12,7 +9,7 @@ public class AnimalTest {
     private Animal a;
     private Animal a2;
 
-    @Before
+    @BeforeEach
     public void prepare(){
         map = new JungleMap(new Vector2d(20,20), new Vector2d(3,3));
         a = new Animal(map, new Vector2d(10, 10), 100);

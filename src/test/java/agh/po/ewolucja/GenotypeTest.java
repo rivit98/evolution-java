@@ -1,19 +1,16 @@
 package agh.po.ewolucja;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.Arrays;
 
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GenotypeTest {
     Genotype g1;
     Genotype g2;
     Genotype g3;
 
-    @Before
+    @BeforeEach
     public void prepare(){
         g1 = new Genotype();
         g2 = new Genotype();

@@ -1,15 +1,14 @@
 package agh.po.ewolucja;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MapDirectionTest {
     MapDirection dir;
     MapDirection dir2;
     MapDirection dir3;
-    @Before
+
+    @BeforeEach
     public void prepare(){
         dir = MapDirection.DEG90;
         dir2 = MapDirection.DEG315;
