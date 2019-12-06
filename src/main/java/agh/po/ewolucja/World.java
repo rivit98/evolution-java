@@ -11,13 +11,16 @@ public class World {
         if(args.length == 3){
             howManyAnimals = Integer.parseInt(args[1]);
             iterLimit = Integer.parseInt(args[0]);
-            c = new Config(args[2]);
+            c = new ConfigParser().parse(args[2]);
         }else{
             c = new Config();
-            howManyAnimals = 300;
+            howManyAnimals = 200;
             iterLimit = 10000;
         }
-        //TODO: move this to Config or sth like this
+
+        Animal.COST_PER_MOVE = c.moveEnergy;
+        Animal.INITIAL_ENERGY = c.startEnergy;
+        Grass.DEFAULT_ENERGY_VALUE = c.plantStartEnergy;
         Vector2d jungleSize = new Vector2d(c.jungleWidth, c.jungleHeight);
         Vector2d mapsize = new Vector2d(c.mapWidth, c.mapHeight);
 
