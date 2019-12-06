@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 
 public class Genotype {
     public static final Integer GENOTYPE_SIZE = 32;
+    private final Random rand = new Random();
     private Integer[] genotype;
 
     public Genotype(){
@@ -28,12 +29,10 @@ public class Genotype {
     }
 
     public Integer getRandom(){
-        Random rand = new Random();
         return this.genotype[rand.nextInt(GENOTYPE_SIZE)];
     }
 
     public void fix(){
-        Random rand = new Random();
         List<Integer> genotypeL = new ArrayList<>(Arrays.asList(this.genotype));
         while(!this.verify(genotypeL)){
             for(int i = 0; i < 8; i++){
@@ -62,7 +61,6 @@ public class Genotype {
     }
 
     public Genotype merge(Genotype g2){
-        Random rand = new Random();
         List<Integer> indexesList = IntStream.range(1, GENOTYPE_SIZE).boxed().collect(Collectors.toCollection(LinkedList::new));
 
         Genotype first = this;
@@ -108,7 +106,6 @@ public class Genotype {
     }
 
     public void randomize() {
-        Random rand = new Random();
         this.genotype = Arrays.stream(this.genotype).map(v -> v = rand.nextInt(8)).toArray(Integer[]::new);
         this.fix();
         Arrays.sort(this.genotype);

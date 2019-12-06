@@ -8,6 +8,7 @@ import java.util.Random;
 //better idea will be storing pool when initializing map and update when eating/spawning grass :/
 public class PointsGenerator {
     private final IWorldMap map;
+    private final Random rand = new Random();
 
     PointsGenerator(IWorldMap map){
         this.map = map;
@@ -47,9 +48,8 @@ public class PointsGenerator {
         List<Vector2d> pool = this.getPool(area, exclude);
 
         Integer howManyGrass = (PERCENT * pool.size()) / 100;
-        Random gen = new Random();
         while(!(howManyGrass--).equals(0) && pool.size() > 0){
-            int randomIdx = gen.nextInt(pool.size());
+            int randomIdx = rand.nextInt(pool.size());
             res.add(pool.get(randomIdx));
             pool.remove(randomIdx);
         }

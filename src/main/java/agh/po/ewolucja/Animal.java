@@ -9,11 +9,9 @@ import java.util.Optional;
 public class Animal {
     public static Integer INITIAL_ENERGY = 50;
     public static Integer COST_PER_MOVE = 1;
-    private static Integer animalCnt = 0;
     private final IWorldMap map;
 
     private Integer age;
-    private Integer animalId;
     private Genotype genotype;
     private Integer energy = INITIAL_ENERGY;
     private Vector2d position = new Vector2d(0,0);
@@ -25,7 +23,6 @@ public class Animal {
         this.orientation = MapDirection.getRandomDirection();
         this.genotype = new Genotype();
         this.age = 0;
-        animalId = animalCnt++;
     }
 
     public Animal(IWorldMap map, Vector2d initialPosition){
@@ -46,11 +43,7 @@ public class Animal {
     public String toString(){
         return this.orientation.toString();
     }
-
-    public Integer getAnimalId(){
-        return this.animalId;
-    }
-
+    
     public void chooseOrientation(){
         MapDirection dir = MapDirection.getDirection(this.genotype.getRandom());
         this.orientation = dir;
@@ -72,7 +65,6 @@ public class Animal {
 
     public void eat(Grass g){
         this.addEnergy(g.getEnergyValue());
-        Harness.getInstance().sendMessage(NetOptions.DELGRASS, g);
     }
 
     public Integer getEnergy(){

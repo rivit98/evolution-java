@@ -3,7 +3,6 @@ package agh.po.ewolucja;
 enum NetOptions{
     PUTGRASS,
     PUTANIMAL,
-    DELGRASS,
     DELANIMAL,
     MOVEANIMAL,
     CREATEWORLD
@@ -20,8 +19,7 @@ public class NetPacketEncoder {
         builder.append(" ");
 
         switch (option){
-            case PUTGRASS:
-            case DELGRASS: {
+            case PUTGRASS: {
                 Grass g = (Grass) object;
                 builder.append(g.getPosition().x);
                 builder.append(" ");
@@ -29,10 +27,19 @@ public class NetPacketEncoder {
                 break;
             }
             case PUTANIMAL:
-            case DELANIMAL:
-            case MOVEANIMAL: {
+            case DELANIMAL: {
                 Animal a = (Animal) object;
-                builder.append(a.getAnimalId());
+                builder.append(a.getPosition().x);
+                builder.append(" ");
+                builder.append(a.getPosition().y);
+                break;
+            }
+            case MOVEANIMAL:{
+                Vector2d v = (Vector2d)((Object[]) object)[0];
+                Animal a = (Animal)((Object[]) object)[1];
+                builder.append(v.x);
+                builder.append(" ");
+                builder.append(v.y);
                 builder.append(" ");
                 builder.append(a.getPosition().x);
                 builder.append(" ");

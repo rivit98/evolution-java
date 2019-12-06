@@ -6,26 +6,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ConfigParser {
 
-    private boolean usingDefaults = false;
-
     public Config parse(String fname){
         Config c;
         try(Reader reader = new FileReader(fname)){
             c = this.parseCommon(reader);
             System.out.println("Using provided .json");
+            return c;
         }catch (IOException e) {
             //what should i do?
-            usingDefaults = true;
         }
 
-        if(usingDefaults){
-            try(Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("/parameters.json"))){
-                c = this.parseCommon(reader);
-                System.out.println("Using default .json");
-                return c;
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
+        return null;
+    }
+
+    public Config parseDefault(){
+        Config c;
+
+        try(Reader reader = new InputStreamReader(this.getClass().getResourceAsStream("/parameters.json"))){
+            c = this.parseCommon(reader);
+            System.out.println("Using default .json");
+            return c;
+        }catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;

@@ -7,15 +7,16 @@ public class World {
     public static void main(String[] args){
         Config c;
         Integer howManyAnimals, iterLimit;
+        Integer pauseTime = 200;
 
         if(args.length == 3){
             howManyAnimals = Integer.parseInt(args[1]);
             iterLimit = Integer.parseInt(args[0]);
             c = new ConfigParser().parse(args[2]);
         }else{
-            c = new Config();
+            c = new ConfigParser().parseDefault();
             howManyAnimals = 200;
-            iterLimit = 10000;
+            iterLimit = 100000;
         }
 
         Animal.COST_PER_MOVE = c.moveEnergy;
@@ -34,16 +35,18 @@ public class World {
 
             int iterations = 0;
             while(iterations++ < iterLimit){
-                if((cnt % 3) == 0){
-                    System.out.println(map);
-                    Harness.getInstance().startSending();
+                System.out.println(map);
+                //Harness.getInstance().startSending();
+                if((cnt % 100) == 0){
+
                 }
                 map.run();
-                Harness.getInstance().stopSending();
+                //Harness.getInstance().stopSending();
 
                 cnt++;
+                Thread.sleep(pauseTime);
             }
-        }catch (IllegalArgumentException | IllegalStateException ex){
+        }catch (IllegalArgumentException | IllegalStateException | InterruptedException ex){
             System.out.println(ex.getMessage());
             System.exit(666);
         }

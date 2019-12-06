@@ -10,7 +10,6 @@ public class JungleMap extends AbstractWorldMap{
     private final HashMap<Vector2d, Grass> grassList = new LinkedHashMap<>();
     private final Rectangle mapSize;
     private final Rectangle jungleSize;
-    private Integer maxAge = 0;
 
     public JungleMap(Vector2d mpsze, Vector2d jungleSize){
         this.mapSize = new Rectangle(new Vector2d(0,0), mpsze);
@@ -100,7 +99,10 @@ public class JungleMap extends AbstractWorldMap{
     @Override
     public void run() {
         //clean dead animals
-        animalMap.values().removeIf(a -> a.getEnergy() <= 0); //TODO: send to Harness
+        animalMap.values().stream().filter(a -> a.getEnergy() <= 0).forEach(a -> {
+            Harness.getInstance().sendMessage(NetOptions.DELANIMAL, a);
+        });
+        animalMap.values().removeIf(a -> a.getEnergy() <= 0);
 //        animals.removeIf(a -> a.getEnergy() <= 0); //funny bug was here
 
         LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
@@ -142,9 +144,7 @@ public class JungleMap extends AbstractWorldMap{
             }
         }
 
-        //animalMap.values().stream().max(Comparator.comparing(Animal::getAge)).ifPresent(oldest -> this.maxAge = oldest.getAge());
         grassList.values().forEach(Grass::grow);
-        animalMap.values().forEach(a -> a.addAge(1));
         spawnGrassInArea(this.mapSize, this.jungleSize, 1);
         spawnGrassInArea(this.jungleSize, null, 1);
     }
@@ -153,7 +153,7 @@ public class JungleMap extends AbstractWorldMap{
     public Object objectAt(Vector2d position) {
         Object o = super.objectAt(position);
         if(o instanceof Collection<?>){
-            LinkedList<Animal> l = new LinkedList<Animal>((Collection) o);
+            LinkedList l = new LinkedList<>((Collection) o);
             if(l.size() > 0) {
                 return o;
             }
@@ -167,13 +167,12 @@ public class JungleMap extends AbstractWorldMap{
     }
 
     public void removeGrass(Grass g){
-        Harness.getInstance().sendMessage(NetOptions.DELGRASS, g);
         grassList.remove(g.getPosition());
     }
 
     @Override
     public String toString(){
-        return super.toString() + "\nIlosc zwierzat: " + animalMap.size() + "\n\n";
-        //return super.toString() + "\nIlosc zwierzat: " + animalMap.size() + "\nNajstarszy: " + this.maxAge + " dni\n";
+        return "Ilosc zwierzat: " + animalMap.size();
+        //return super.toString() + "\nIlosc zwierzat: " + animalMap.size() + "\n\n";
     }
 }
