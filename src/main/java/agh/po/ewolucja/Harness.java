@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-//simple singleton class
-
 enum HarnessState{
     UNINITIALIZED,
     INITIALIZED
@@ -13,22 +11,13 @@ enum HarnessState{
 
 public class Harness {
     private static Harness INSTANCE;
-    private static NetPacketEncoder encoder = new NetPacketEncoder();
+    private final static NetPacketEncoder encoder = new NetPacketEncoder();
     private static HarnessState state = HarnessState.UNINITIALIZED;
 
     private Socket clientSocket;
     private PrintWriter out;
-    private boolean allowSending;
 
     private Harness() {
-    }
-
-    public void stopSending(){
-        allowSending = false;
-    }
-
-    public void startSending(){
-        allowSending = true;
     }
 
     public static Harness getInstance() {
@@ -61,11 +50,10 @@ public class Harness {
     private void startConnection(String ip, int port) throws IOException {
         clientSocket = new Socket(ip, port);
         out = new PrintWriter(clientSocket.getOutputStream(), true);
-        allowSending = true;
     }
 
     public void sendMessage(NetOptions option, Object o) {
-        if(!allowSending || state == HarnessState.UNINITIALIZED){
+        if(state == HarnessState.UNINITIALIZED){
             return;
         }
 

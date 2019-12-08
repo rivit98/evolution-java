@@ -1,5 +1,6 @@
 package agh.po.ewolucja;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,8 +16,8 @@ public class World {
             c = new ConfigParser().parse(args[2]);
         }else{
             c = new ConfigParser().parseDefault();
-            howManyAnimals = 200;
-            iterLimit = 100000;
+            howManyAnimals = 100;
+            iterLimit = 1000;
         }
 
         Animal.COST_PER_MOVE = c.moveEnergy;
@@ -36,20 +37,20 @@ public class World {
             int iterations = 0;
             while(iterations++ < iterLimit){
                 System.out.println(map);
-                //Harness.getInstance().startSending();
                 if((cnt % 100) == 0){
-
                 }
                 map.run();
-                //Harness.getInstance().stopSending();
 
                 cnt++;
                 Thread.sleep(pauseTime);
             }
-        }catch (IllegalArgumentException | IllegalStateException | InterruptedException ex){
+
+            Harness.getInstance().stopConnection();
+        }catch (IllegalArgumentException | IllegalStateException | InterruptedException | IOException ex){
             System.out.println(ex.getMessage());
             System.exit(666);
         }
+
     }
 }
 

@@ -4,14 +4,17 @@ package agh.po.ewolucja;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 public class Animal {
     public static Integer INITIAL_ENERGY = 50;
     public static Integer COST_PER_MOVE = 1;
     private final IWorldMap map;
+    private static final Random rand = new Random();
 
     private Integer age;
+    private final Integer animalID;
     private Genotype genotype;
     private Integer energy = INITIAL_ENERGY;
     private Vector2d position = new Vector2d(0,0);
@@ -23,6 +26,7 @@ public class Animal {
         this.orientation = MapDirection.getRandomDirection();
         this.genotype = new Genotype();
         this.age = 0;
+        this.animalID = rand.nextInt(10000);
     }
 
     public Animal(IWorldMap map, Vector2d initialPosition){
@@ -38,6 +42,10 @@ public class Animal {
     public Animal(IWorldMap map, Vector2d initialPosition, Integer energy, Genotype g){
         this(map, initialPosition, energy);
         this.genotype = g;
+    }
+
+    public Integer getAnimalID(){
+        return animalID;
     }
 
     public String toString(){

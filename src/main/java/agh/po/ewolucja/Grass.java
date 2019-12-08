@@ -2,8 +2,8 @@ package agh.po.ewolucja;
 
 public class Grass {
     public static Integer DEFAULT_ENERGY_VALUE = 1;
-    private static final Integer MAX_ENERGY_VALUE = 5;
-    private Vector2d position;
+    private static final Integer MAX_ENERGY_VALUE = 20;
+    private final Vector2d position;
     private Integer energy;
 
     public Grass(Vector2d position){
@@ -17,7 +17,7 @@ public class Grass {
     }
 
     public void grow(){
-        energy += Math.min(energy+1, MAX_ENERGY_VALUE);
+        energy = Math.min(energy+1, MAX_ENERGY_VALUE);
     }
 
     public Integer getEnergyValue(){

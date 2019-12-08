@@ -39,7 +39,7 @@ public class JungleMap extends AbstractWorldMap{
         List<Vector2d> pool = pointsGenerator.getPool(area, exclude);
         Collections.shuffle(pool);
 
-        while(!(howMany--).equals(0) && pool.size() > 0){
+        while(howMany-- > 0 && pool.size() > 0){
             Vector2d v = pool.get(0);
             Grass g = new Grass(v);
             grassList.put(v, g);
@@ -145,7 +145,7 @@ public class JungleMap extends AbstractWorldMap{
         }
 
         grassList.values().forEach(Grass::grow);
-        spawnGrassInArea(this.mapSize, this.jungleSize, 1);
+        spawnGrassInArea(this.mapSize, this.jungleSize, 2);
         spawnGrassInArea(this.jungleSize, null, 1);
     }
 

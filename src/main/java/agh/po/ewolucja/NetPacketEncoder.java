@@ -21,6 +21,8 @@ public class NetPacketEncoder {
         switch (option){
             case PUTGRASS: {
                 Grass g = (Grass) object;
+                builder.append(0);
+                builder.append(" ");
                 builder.append(g.getPosition().x);
                 builder.append(" ");
                 builder.append(g.getPosition().y);
@@ -29,6 +31,8 @@ public class NetPacketEncoder {
             case PUTANIMAL:
             case DELANIMAL: {
                 Animal a = (Animal) object;
+                builder.append(a.getAnimalID());
+                builder.append(" ");
                 builder.append(a.getPosition().x);
                 builder.append(" ");
                 builder.append(a.getPosition().y);
@@ -37,6 +41,8 @@ public class NetPacketEncoder {
             case MOVEANIMAL:{
                 Vector2d v = (Vector2d)((Object[]) object)[0];
                 Animal a = (Animal)((Object[]) object)[1];
+                builder.append(a.getAnimalID());
+                builder.append(" ");
                 builder.append(v.x);
                 builder.append(" ");
                 builder.append(v.y);
