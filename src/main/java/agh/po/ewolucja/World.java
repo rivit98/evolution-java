@@ -10,6 +10,8 @@ public class World {
         Integer howManyAnimals, iterLimit;
         Integer pauseTime = 200;
 
+        Harness.getInstance().enable();
+
         if(args.length == 3){
             howManyAnimals = Integer.parseInt(args[1]);
             iterLimit = Integer.parseInt(args[0]);

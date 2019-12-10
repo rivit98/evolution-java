@@ -90,9 +90,4 @@ public class JungleMapTest {
         assertTrue(this.map.objectAt(toCheck) instanceof Grass);
         assertNotNull(this.map.grassAt(toCheck));
     }
-
-    @Test
-    public void runTest(){
-        //TODO: implement me
-    }
 }

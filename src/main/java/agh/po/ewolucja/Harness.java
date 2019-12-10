@@ -16,8 +16,17 @@ public class Harness {
 
     private Socket clientSocket;
     private PrintWriter out;
+    private boolean enabled = false;
 
     private Harness() {
+    }
+
+    public void enable(){
+        enabled = true;
+    }
+
+    public void disable(){
+        enabled = false;
     }
 
     public static Harness getInstance() {
@@ -53,7 +62,7 @@ public class Harness {
     }
 
     public void sendMessage(NetOptions option, Object o) {
-        if(state == HarnessState.UNINITIALIZED){
+        if(!enabled || state == HarnessState.UNINITIALIZED){
             return;
         }
 
