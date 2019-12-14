@@ -12,11 +12,12 @@ enum MapDirection {
     DEG270,
     DEG315;
 
-    private static MapDirection[] dirArray = MapDirection.values();
-    private static String[] dirString = new String[]{"↑", "↗", "→", "↘", "↓", "↙", "←" , "↖"};
+    private static final MapDirection[] dirArray = MapDirection.values();
+    private static final String[] dirString = new String[]{"↑", "↗", "→", "↘", "↓", "↙", "←" , "↖"};
+    private static final Random rand = new Random();
 
     public static MapDirection getRandomDirection(){
-        return getDirection(new Random().nextInt(dirArray.length));
+        return getDirection(rand.nextInt(dirArray.length));
     }
 
     public static MapDirection getDirection(Integer x){

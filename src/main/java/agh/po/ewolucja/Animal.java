@@ -1,31 +1,28 @@
 package agh.po.ewolucja;
 
+import agh.po.ewolucja.Interfaces.IWorldMap;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-
-public class Animal {
-    public static Integer INITIAL_ENERGY = 50;
-    public static Integer COST_PER_MOVE = 1;
+public class Animal extends AbstractMapElement {
+    public static Double INITIAL_ENERGY = 50.0;
+    public static Double COST_PER_MOVE = 1.0;
     private final IWorldMap map;
     private static final Random rand = new Random();
 
-    private Integer age;
     private final Integer animalID;
+    private Integer age = 0;
+    private Integer kids = 0;
     private Genotype genotype;
-    private Integer energy = INITIAL_ENERGY;
-    private Vector2d position = new Vector2d(0,0);
-    private List<IPositionChangeObserver> observers = new LinkedList<>();
     private MapDirection orientation;
 
     public Animal(IWorldMap map){
+        super(); //is it necessary?
+        this.energy = INITIAL_ENERGY;
         this.map = map;
         this.orientation = MapDirection.getRandomDirection();
         this.genotype = new Genotype();
-        this.age = 0;
         this.animalID = rand.nextInt(10000);
     }
 
@@ -34,14 +31,30 @@ public class Animal {
         this.position = initialPosition;
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition, Integer energy){
+    public Animal(IWorldMap map, Vector2d initialPosition, Double energy){
         this(map, initialPosition);
         this.energy = energy;
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition, Integer energy, Genotype g){
+    public Animal(IWorldMap map, Vector2d initialPosition, Double energy, Genotype g){
         this(map, initialPosition, energy);
         this.genotype = g;
+    }
+
+    public Integer getAge(){
+        return age;
+    }
+
+    public void incAge(){
+        age++;
+    }
+
+    public Integer getKids(){
+        return kids;
+    }
+
+    public void incKids(){
+        kids++;
     }
 
     public Integer getAnimalID(){
@@ -53,56 +66,30 @@ public class Animal {
     }
     
     public void chooseOrientation(){
-        MapDirection dir = MapDirection.getDirection(this.genotype.getRandom());
-        this.orientation = dir;
+        this.orientation = MapDirection.getDirection(this.genotype.getRandom());
     }
 
     public Vector2d movePre(){
-        Vector2d unit = this.orientation.toUnitVector();
-        Vector2d newPosition = this.position.add(unit);
-
+        Vector2d newPosition = position.add(orientation.toUnitVector());
         return newPosition;
     }
 
     public void moveTo(Vector2d newPosition){
         Vector2d old = new Vector2d(this.position);
         this.position = newPosition;
-        this.notifyObservers(old);
+        this.notifyObservers(old, this);
         this.addEnergy(-COST_PER_MOVE);
     }
 
     public void eat(Grass g){
-        this.addEnergy(g.getEnergyValue());
-    }
-
-    public Integer getEnergy(){
-        return this.energy;
-    }
-
-    public void addEnergy(Integer e){
-        this.energy += e;
-        if(this.energy < 0){
-            this.energy = 0;
-        }
-    }
-
-    public void addAge(Integer a){
-        this.age += a;
-    }
-
-    public Integer getAge(){
-        return this.age;
-    }
-
-    public Vector2d getPosition() {
-        return position;
+        this.addEnergy(g.getEnergy());
     }
 
     public Genotype getGenotype(){
         return genotype;
     }
 
-    private static Integer getRequiredEnergyToReproduce(){
+    private static Double getRequiredEnergyToReproduce(){
         return INITIAL_ENERGY/2;
     }
 
@@ -118,26 +105,17 @@ public class Animal {
             return null;
         }
 
-        Integer newEnergy = a1.getEnergy()/4;
+        Double newEnergy = a1.getEnergy()/4;
         a1.addEnergy(-newEnergy);
-        Integer a2energy = a2.getEnergy()/4;
+        Double a2energy = a2.getEnergy()/4;
         newEnergy += a2energy;
         a2.addEnergy(-a2energy);
+
+        a1.incKids();
+        a2.incKids();
 
         Animal newAnimal = new Animal(a1.map, calcPos.get(), newEnergy, a1.genotype.merge(a2.genotype));
 
         return newAnimal;
-    }
-
-    public void addObserver(IPositionChangeObserver observer){
-        this.observers.add(observer);
-    }
-
-    public void removeObserver(IPositionChangeObserver observer){
-        this.observers.remove(observer);
-    }
-
-    private void notifyObservers(Vector2d oldPosition){
-        this.observers.forEach(v -> v.positionChanged(oldPosition, this));
     }
 }

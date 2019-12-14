@@ -1,8 +1,11 @@
 package agh.po.ewolucja;
 
-import java.io.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class ConfigParser {
 

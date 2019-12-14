@@ -1,11 +1,13 @@
 package agh.po.ewolucja;
 
+import agh.po.ewolucja.Interfaces.IWorldMap;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-//better idea will be storing pool when initializing map and update when eating/spawning grass :/
+//reimplement with set
 public class PointsGenerator {
     private final IWorldMap map;
     private final Random rand = new Random();

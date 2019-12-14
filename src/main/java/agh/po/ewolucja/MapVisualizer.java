@@ -1,5 +1,7 @@
 package agh.po.ewolucja;
 
+import agh.po.ewolucja.Interfaces.IWorldMap;
+
 import java.util.Collection;
 import java.util.LinkedList;
 

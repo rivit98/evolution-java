@@ -1,5 +1,7 @@
 package agh.po.ewolucja;
 
+import agh.po.ewolucja.Interfaces.IPositionChangeObserver;
+import agh.po.ewolucja.Interfaces.IWorldMap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -9,16 +11,15 @@ import java.util.List;
 public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver {
     protected Multimap<Vector2d, Animal> animalMap = LinkedListMultimap.create();
     private final MapVisualizer mapVisualizer = new MapVisualizer(this);
+    protected Integer day = 0;
 
     @Override
     public boolean place(Animal a) {
-        if (this.objectAt(a.getPosition()) != null) {
+        if (this.isOccupied(a.getPosition())) {
 //            throw new IllegalArgumentException("This field is occupied: " + a.getPosition());
             return false;
         }
 
-        //TODO: send to Harness
-        Harness.getInstance().sendMessage(NetOptions.PUTANIMAL, a);
         animalMap.put(a.getPosition(), a);
         a.addObserver(this);
         return true;
@@ -51,16 +52,12 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         for (Animal animal : animalListConverted) {
             animal.moveTo(animal.movePre());
         }
-    }
-
-    @Override
-    public boolean canMoveTo(Vector2d newPosition) {
-        return true;
+        day++;
     }
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        return this.animalMap.containsKey(position);
+        return this.objectAt(position) != null;
     }
 
     @Override
@@ -70,7 +67,6 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
 
     @Override
     public void positionChanged(Vector2d oldPosition, Animal a){
-        Harness.getInstance().sendMessage(NetOptions.MOVEANIMAL, new Object[]{oldPosition, a});
         this.animalMap.remove(oldPosition, a);
         this.animalMap.put(a.getPosition(), a);
     }

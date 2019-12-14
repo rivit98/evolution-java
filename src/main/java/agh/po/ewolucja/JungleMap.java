@@ -19,7 +19,6 @@ public class JungleMap extends AbstractWorldMap{
         jungleLowerLeftCorner.y = (mpsze.y-jungleSize.y)/2;
 
         this.jungleSize = new Rectangle(jungleLowerLeftCorner, jungleLowerLeftCorner.add(jungleSize));
-        Harness.getInstance().sendMessage(NetOptions.CREATEWORLD, this);
 
         pointsGenerator = new PointsGenerator(this);
         this.prepareArea(this.jungleSize, null, GRASS_JUNGLE_PERCENT);
@@ -31,7 +30,6 @@ public class JungleMap extends AbstractWorldMap{
                 .forEach(v -> {
                     Grass g = new Grass(v);
                     grassList.put(v, g);
-                    Harness.getInstance().sendMessage(NetOptions.PUTGRASS, g);
                 });
     }
 
@@ -43,14 +41,10 @@ public class JungleMap extends AbstractWorldMap{
             Vector2d v = pool.get(0);
             Grass g = new Grass(v);
             grassList.put(v, g);
-            Harness.getInstance().sendMessage(NetOptions.PUTGRASS, g);
             pool.remove(0);
         }
     }
 
-    public int getGrassNum() {
-        return grassList.size();
-    }
 
     public Vector2d translatePosition(Vector2d po){
         Integer x = po.x;
@@ -98,55 +92,62 @@ public class JungleMap extends AbstractWorldMap{
 
     @Override
     public void run() {
-        //clean dead animals
-        animalMap.values().stream().filter(a -> a.getEnergy() <= 0).forEach(a -> {
-            Harness.getInstance().sendMessage(NetOptions.DELANIMAL, a);
-        });
-        animalMap.values().removeIf(a -> a.getEnergy() <= 0);
-//        animals.removeIf(a -> a.getEnergy() <= 0); //funny bug was here
-
         LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
-        for(Animal a : animals){
-            a.chooseOrientation();
 
+        //clean dead animals
+        animalMap.values().removeIf(a -> a.getEnergy() <= 0);
+        //TODO: removeAnimal from map
+
+        //choose orientation
+        animalMap.values().forEach(Animal::chooseOrientation);
+
+        //move
+        //animalMap.values().forEach will cause ConcurrentModificationException because of observers and so on
+        animals.forEach(a -> {
             Vector2d newPos = a.movePre();
             newPos = this.translatePosition(newPos);
             a.moveTo(newPos);
+        });
+
+        //eat
+        animalMap.values().forEach(a -> {
+            Vector2d newPos = a.getPosition();
+            Grass g = grassAt(newPos);
+
+            if(g == null){
+                return;
+            }
+            removeGrass(g);
 
             LinkedList<Animal> list = new LinkedList<>(animalMap.get(newPos));
-            Grass g = grassAt(newPos);
-            if(g != null){
-                if(list.size() > 1){
-                    Animal strongest = list.stream().max(Comparator.comparing(Animal::getEnergy)).orElseThrow(NoSuchElementException::new);
-                    List<Animal> strongestList = list.stream().filter(anim -> anim.getEnergy().equals(strongest.getEnergy())).collect(Collectors.toList());
 
-                    if(strongestList.size() > 1){
-                        int toEat = (int) Math.ceil(g.getEnergyValue()/(double)strongestList.size());
-                        for(Animal anim : strongestList){
-                            anim.eat(new Grass(new Vector2d(0,0), toEat));
-                        }
-                    }else{
-                        a.eat(g);
-                    }
-                }else{
-                    a.eat(g);
-                }
-                removeGrass(g);
+            Double strongestEnergy = list.stream().mapToDouble(Animal::getEnergy).max().orElse(a.getEnergy());
+            List<Animal> strongestList = list.stream().filter(anim -> anim.getEnergy().equals(strongestEnergy)).collect(Collectors.toList());
+
+            Double energy = g.getEnergy() / strongestList.size();
+            for (Animal anim : strongestList) {
+                anim.addEnergy(energy);
             }
+        });
 
-            if(list.size() > 1){
-                list.sort(Comparator.comparingInt(Animal::getEnergy));
-                Animal a1 = list.get(0);
-                Animal a2 = list.get(1);
-
-                Optional<Animal> a3 = Optional.ofNullable(a1.merge(a2));
-                a3.ifPresent(this::place);
+        //reproduce
+        animals.forEach(a -> {
+            Vector2d newPos = a.getPosition();
+            LinkedList<Animal> list = new LinkedList<>(animalMap.get(newPos));
+            int size = list.size();
+            if(size < 2) {
+                return;
             }
-        }
+            Collections.shuffle(list);
+            Optional<Animal> bbyAnimal = Optional.ofNullable(list.get(0).merge(list.get(1)));
+            bbyAnimal.ifPresent(this::place);
+        });
 
+        animalMap.values().forEach(Animal::incAge);
         grassList.values().forEach(Grass::grow);
-        spawnGrassInArea(this.mapSize, this.jungleSize, 2);
+        spawnGrassInArea(this.mapSize, this.jungleSize, 1);
         spawnGrassInArea(this.jungleSize, null, 1);
+        day++;
     }
 
     @Override
@@ -166,13 +167,17 @@ public class JungleMap extends AbstractWorldMap{
         return grassList.get(position);
     }
 
+    public int getGrassNum() {
+        return grassList.size();
+    }
+
     public void removeGrass(Grass g){
         grassList.remove(g.getPosition());
     }
 
     @Override
     public String toString(){
-        return "Ilosc zwierzat: " + animalMap.size();
-        //return super.toString() + "\nIlosc zwierzat: " + animalMap.size() + "\n\n";
+        //return "Ilosc zwierzat: " + animalMap.size();
+        return super.toString() + "\nIlosc zwierzat: " + animalMap.size() + "\n\n";
     }
 }

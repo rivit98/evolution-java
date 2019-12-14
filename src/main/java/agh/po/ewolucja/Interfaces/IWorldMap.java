@@ -1,4 +1,7 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Interfaces;
+
+import agh.po.ewolucja.Animal;
+import agh.po.ewolucja.Vector2d;
 
 /**
  * The interface responsible for interacting with the map of the world.
@@ -15,7 +18,7 @@ public interface IWorldMap {
      *            The position checked for the movement possibility.
      * @return True if the object can move to that position.
      */
-    boolean canMoveTo(Vector2d position);
+    //boolean canMoveTo(Vector2d position);
 
     /**
      * Place a car on the map.

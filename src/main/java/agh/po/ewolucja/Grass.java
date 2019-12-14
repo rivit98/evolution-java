@@ -1,31 +1,22 @@
 package agh.po.ewolucja;
 
-public class Grass {
-    public static Integer DEFAULT_ENERGY_VALUE = 1;
-    private static final Integer MAX_ENERGY_VALUE = 20;
-    private final Vector2d position;
-    private Integer energy;
+public class Grass extends AbstractMapElement {
+    public static Double DEFAULT_ENERGY_VALUE = 1.0;
+    private static final Double MAX_ENERGY_VALUE = 20.0;
 
     public Grass(Vector2d position){
+        super();
         this.position = position;
         this.energy = DEFAULT_ENERGY_VALUE;
     }
 
-    public Grass(Vector2d position, Integer energy){
+    public Grass(Vector2d position, Double energy){
         this(position);
         this.energy = energy;
     }
 
     public void grow(){
         energy = Math.min(energy+1, MAX_ENERGY_VALUE);
-    }
-
-    public Integer getEnergyValue(){
-        return energy;
-    }
-
-    public Vector2d getPosition(){
-        return position;
     }
 
     public String toString(){
