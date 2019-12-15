@@ -1,7 +1,9 @@
 package agh.po.ewolucja;
 
+import javax.swing.*;
+
 public class GuiMain {
-    public static void main(String args[]){
+    public static void main(String[] args){
         Config c;
         if(args.length == 3){
             c = new ConfigParser().parse(args[2]);
@@ -10,10 +12,11 @@ public class GuiMain {
         }else{
             c = new ConfigParser().parseDefault();
         }
-        //c.applyConfig(); //TODO: move before world runs
 
         try{
-            SettingsPage settingsPage = new SettingsPage(c);
+            SwingUtilities.invokeLater(() -> {
+                new SettingsPage(c);
+            });
 
         }catch (Exception ex){
             //TODO: change this

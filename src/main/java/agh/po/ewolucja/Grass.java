@@ -1,18 +1,17 @@
 package agh.po.ewolucja;
 
+import java.awt.*;
+
 public class Grass extends AbstractMapElement {
-    public static Double DEFAULT_ENERGY_VALUE = 1.0;
-    private static final Double MAX_ENERGY_VALUE = 20.0;
+    private static final Double MAX_ENERGY_VALUE = 15.0;
 
     public Grass(Vector2d position){
-        super();
         this.position = position;
-        this.energy = DEFAULT_ENERGY_VALUE;
     }
 
-    public Grass(Vector2d position, Double energy){
+    public Grass(Vector2d position, Double e){
         this(position);
-        this.energy = energy;
+        energy = e;
     }
 
     public void grow(){
@@ -21,5 +20,10 @@ public class Grass extends AbstractMapElement {
 
     public String toString(){
         return "*";
+    }
+
+    @Override
+    public Color getColor() {
+        return new Color(0, (int) Math.max(100, 255-(energy*9)),0);
     }
 }

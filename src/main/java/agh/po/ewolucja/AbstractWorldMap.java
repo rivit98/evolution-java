@@ -13,6 +13,10 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     private final MapVisualizer mapVisualizer = new MapVisualizer(this);
     protected Integer day = 0;
 
+    public Integer getDay(){
+        return day;
+    }
+
     @Override
     public boolean place(Animal a) {
         if (this.isOccupied(a.getPosition())) {
@@ -76,5 +80,9 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
     public String toString(){
         Rectangle result = this.getMapCorners();
         return this.mapVisualizer.draw(result.lowerLeft, result.upperRight);
+    }
+
+    public LinkedList<Animal> getAnimals(){
+        return (LinkedList<Animal>) animalMap.values();
     }
 }

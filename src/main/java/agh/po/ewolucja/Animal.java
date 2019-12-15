@@ -1,14 +1,11 @@
 package agh.po.ewolucja;
 
-import agh.po.ewolucja.Interfaces.IWorldMap;
-
+import java.awt.*;
 import java.util.Optional;
 import java.util.Random;
 
 public class Animal extends AbstractMapElement {
-    public static Double INITIAL_ENERGY = 50.0;
-    public static Double COST_PER_MOVE = 1.0;
-    private final IWorldMap map;
+    private final JungleMap map;
     private static final Random rand = new Random();
 
     private final Integer animalID;
@@ -17,28 +14,31 @@ public class Animal extends AbstractMapElement {
     private Genotype genotype;
     private MapDirection orientation;
 
-    public Animal(IWorldMap map){
-        super(); //is it necessary?
-        this.energy = INITIAL_ENERGY;
+    public Animal(JungleMap map){
         this.map = map;
         this.orientation = MapDirection.getRandomDirection();
         this.genotype = new Genotype();
         this.animalID = rand.nextInt(10000);
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition){
+    public Animal(JungleMap map, Vector2d initialPosition){
         this(map);
-        this.position = initialPosition;
+        setPosition(initialPosition);
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition, Double energy){
+    public Animal(JungleMap map, Vector2d initialPosition, Double energy){
         this(map, initialPosition);
         this.energy = energy;
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition, Double energy, Genotype g){
+    public Animal(JungleMap map, Vector2d initialPosition, Double energy, Genotype g){
         this(map, initialPosition, energy);
         this.genotype = g;
+    }
+
+    @Override
+    public Color getColor(){
+        return new Color((int) Math.min(255, Math.max(0, 255-energy)),0,0);
     }
 
     public Integer getAge(){
@@ -76,9 +76,9 @@ public class Animal extends AbstractMapElement {
 
     public void moveTo(Vector2d newPosition){
         Vector2d old = new Vector2d(this.position);
-        this.position = newPosition;
+        setPosition(newPosition);
         this.notifyObservers(old, this);
-        this.addEnergy(-COST_PER_MOVE);
+        this.addEnergy(-map.cfg.moveEnergy);
     }
 
     public void eat(Grass g){
@@ -89,14 +89,14 @@ public class Animal extends AbstractMapElement {
         return genotype;
     }
 
-    private static Double getRequiredEnergyToReproduce(){
-        return INITIAL_ENERGY/2;
+    private Double getRequiredEnergyToReproduce(){
+        return this.map.cfg.startEnergy/2;
     }
 
     public Animal merge(Animal a2){
         Animal a1 = this;
 
-        if(a1.getEnergy() < Animal.getRequiredEnergyToReproduce() || a2.getEnergy() < Animal.getRequiredEnergyToReproduce()){
+        if(a1.getEnergy() < a1.getRequiredEnergyToReproduce() || a2.getEnergy() < a2.getRequiredEnergyToReproduce()){
             return null;
         }
 

@@ -7,11 +7,18 @@ public class JungleMap extends AbstractWorldMap{
     public static final Integer GRASS_STEP_PERCENT = 5;
     public static final Integer GRASS_JUNGLE_PERCENT = 60;
     private final PointsGenerator pointsGenerator;
-    private final HashMap<Vector2d, Grass> grassList = new LinkedHashMap<>();
+    public final HashMap<Vector2d, Grass> grassList = new LinkedHashMap<>();
     private final Rectangle mapSize;
     private final Rectangle jungleSize;
+    public Config cfg;
 
-    public JungleMap(Vector2d mpsze, Vector2d jungleSize){
+    public JungleMap(Vector2d mpsze, Vector2d jungleSize, Config c){
+        if(c == null){
+            //this is only for test compatibility
+            cfg = new ConfigParser().parseDefault();
+        }else{
+            cfg = c;
+        }
         this.mapSize = new Rectangle(new Vector2d(0,0), mpsze);
 
         Vector2d jungleLowerLeftCorner = new Vector2d(0,0);
@@ -25,10 +32,14 @@ public class JungleMap extends AbstractWorldMap{
         this.prepareArea(this.mapSize, this.jungleSize, GRASS_STEP_PERCENT);
     }
 
+    public JungleMap(Vector2d mpsze, Vector2d jungleSize) {
+        this(mpsze, jungleSize, null);
+    }
+
     private void prepareArea(Rectangle area, Rectangle exclude, Integer percent){
         pointsGenerator.getRandomPoints(area, exclude, percent)
                 .forEach(v -> {
-                    Grass g = new Grass(v);
+                    Grass g = new Grass(v, cfg.plantStartEnergy);
                     grassList.put(v, g);
                 });
     }
@@ -39,12 +50,11 @@ public class JungleMap extends AbstractWorldMap{
 
         while(howMany-- > 0 && pool.size() > 0){
             Vector2d v = pool.get(0);
-            Grass g = new Grass(v);
+            Grass g = new Grass(v, cfg.plantStartEnergy);
             grassList.put(v, g);
             pool.remove(0);
         }
     }
-
 
     public Vector2d translatePosition(Vector2d po){
         Integer x = po.x;
@@ -92,15 +102,13 @@ public class JungleMap extends AbstractWorldMap{
 
     @Override
     public void run() {
-        LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
-
         //clean dead animals
-        animalMap.values().removeIf(a -> a.getEnergy() <= 0);
-        //TODO: removeAnimal from map
+        animalMap.values().removeIf(a -> a.getEnergy() <= 0.0);
 
         //choose orientation
         animalMap.values().forEach(Animal::chooseOrientation);
 
+        LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
         //move
         //animalMap.values().forEach will cause ConcurrentModificationException because of observers and so on
         animals.forEach(a -> {
@@ -117,7 +125,6 @@ public class JungleMap extends AbstractWorldMap{
             if(g == null){
                 return;
             }
-            removeGrass(g);
 
             LinkedList<Animal> list = new LinkedList<>(animalMap.get(newPos));
 
@@ -128,6 +135,7 @@ public class JungleMap extends AbstractWorldMap{
             for (Animal anim : strongestList) {
                 anim.addEnergy(energy);
             }
+            removeGrass(g);
         });
 
         //reproduce
