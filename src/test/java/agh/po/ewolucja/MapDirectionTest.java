@@ -1,5 +1,6 @@
 package agh.po.ewolucja;
 
+import agh.po.ewolucja.Map.MapDirection;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

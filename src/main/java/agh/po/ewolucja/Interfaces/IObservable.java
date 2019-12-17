@@ -1,10 +1,10 @@
 package agh.po.ewolucja.Interfaces;
 
-import agh.po.ewolucja.Animal;
-import agh.po.ewolucja.Vector2d;
+import agh.po.ewolucja.Classes.Animal;
+import agh.po.ewolucja.Classes.Vector2d;
 
 public interface IObservable {
-    void addObserver(IPositionChangeObserver observer);
-    void removeObserver(IPositionChangeObserver observer);
+    void addObserver(IPositionChangeListener observer);
+    void removeObserver(IPositionChangeListener observer);
     void notifyObservers(Vector2d oldPosition, Animal a);
 }

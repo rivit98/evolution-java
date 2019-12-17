@@ -1,8 +1,10 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Map;
+
+import agh.po.ewolucja.Classes.Vector2d;
 
 import java.util.Random;
 
-enum MapDirection {
+public enum MapDirection {
     DEG0,
     DEG45,
     DEG90,

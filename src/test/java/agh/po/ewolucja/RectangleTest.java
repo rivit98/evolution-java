@@ -1,4 +1,6 @@
 package agh.po.ewolucja;
+import agh.po.ewolucja.Classes.Rectangle;
+import agh.po.ewolucja.Classes.Vector2d;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

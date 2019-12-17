@@ -1,7 +1,7 @@
 package agh.po.ewolucja.Interfaces;
 
-import agh.po.ewolucja.Animal;
-import agh.po.ewolucja.Vector2d;
+import agh.po.ewolucja.Classes.Animal;
+import agh.po.ewolucja.Classes.Vector2d;
 
 /**
  * The interface responsible for interacting with the map of the world.

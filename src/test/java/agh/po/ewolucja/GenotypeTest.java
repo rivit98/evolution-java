@@ -2,6 +2,7 @@ package agh.po.ewolucja;
 
 import java.util.Arrays;
 
+import agh.po.ewolucja.Classes.Genotype;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

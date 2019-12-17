@@ -1,4 +1,6 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Gui;
+
+import agh.po.ewolucja.Config.Config;
 
 import javax.swing.*;
 

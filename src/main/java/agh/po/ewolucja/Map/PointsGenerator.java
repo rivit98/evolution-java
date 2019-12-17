@@ -1,5 +1,7 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Map;
 
+import agh.po.ewolucja.Classes.Rectangle;
+import agh.po.ewolucja.Classes.Vector2d;
 import agh.po.ewolucja.Interfaces.IWorldMap;
 
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ public class PointsGenerator {
     private final IWorldMap map;
     private final Random rand = new Random();
 
-    PointsGenerator(IWorldMap map){
+    public PointsGenerator(IWorldMap map){
         this.map = map;
     }
 

@@ -1,4 +1,4 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Classes;
 
 import java.awt.*;
 

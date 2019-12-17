@@ -1,5 +1,6 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Config;
 
+import agh.po.ewolucja.Config.Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.FileReader;

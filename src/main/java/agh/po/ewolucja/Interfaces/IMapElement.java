@@ -1,6 +1,6 @@
 package agh.po.ewolucja.Interfaces;
 
-import agh.po.ewolucja.Vector2d;
+import agh.po.ewolucja.Classes.Vector2d;
 
 import java.awt.*;
 

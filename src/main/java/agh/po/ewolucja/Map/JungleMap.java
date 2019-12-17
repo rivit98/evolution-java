@@ -1,15 +1,28 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Map;
+
+import agh.po.ewolucja.Classes.*;
+import agh.po.ewolucja.Config.Config;
+import agh.po.ewolucja.Config.ConfigParser;
+import agh.po.ewolucja.Interfaces.IPositionChangeListener;
+import agh.po.ewolucja.Interfaces.IWorldMap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JungleMap extends AbstractWorldMap{
-    public static final Integer GRASS_STEP_PERCENT = 5;
+public class JungleMap implements IWorldMap, IPositionChangeListener {
+    public static final Integer GRASS_STEP_PERCENT = 10;
     public static final Integer GRASS_JUNGLE_PERCENT = 60;
-    private final PointsGenerator pointsGenerator;
     public final HashMap<Vector2d, Grass> grassList = new LinkedHashMap<>();
     private final Rectangle mapSize;
     private final Rectangle jungleSize;
+    private final PointsGenerator pointsGenerator;
+    private final List<Animal> deadAnimals = new ArrayList<>();
+    public final Multimap<Vector2d, Animal> animalMap = LinkedListMultimap.create();
+    private final HashMap<Genotype, Integer> animalGenes = new HashMap<>();
+
+    protected Integer day = 0;
     public Config cfg;
 
     public JungleMap(Vector2d mpsze, Vector2d jungleSize, Config c){
@@ -34,6 +47,18 @@ public class JungleMap extends AbstractWorldMap{
 
     public JungleMap(Vector2d mpsze, Vector2d jungleSize) {
         this(mpsze, jungleSize, null);
+    }
+
+    @Override
+    public boolean place(Animal a) {
+        if (this.isOccupied(a.getPosition())) {
+            return false;
+        }
+
+        animalMap.put(a.getPosition(), a);
+        addGenotypeToStats(a);
+        a.addObserver(this);
+        return true;
     }
 
     private void prepareArea(Rectangle area, Rectangle exclude, Integer percent){
@@ -95,29 +120,27 @@ public class JungleMap extends AbstractWorldMap{
         return null;
     }
 
-    @Override
-    protected Rectangle getMapCorners() {
+    public Rectangle getMapCorners() {
         return this.mapSize;
     }
 
-    @Override
-    public void run() {
-        //clean dead animals
+    private void cleanDeadAnimals(){
+        animalMap.values().stream().filter(a -> a.getEnergy() <= 0.0).forEach(a -> {
+            removeGenotypeFromStats(a);
+            deadAnimals.add(a);
+        });
         animalMap.values().removeIf(a -> a.getEnergy() <= 0.0);
+    }
 
-        //choose orientation
-        animalMap.values().forEach(Animal::chooseOrientation);
-
-        LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
-        //move
-        //animalMap.values().forEach will cause ConcurrentModificationException because of observers and so on
+    private void moveAnimals(List<Animal> animals){
         animals.forEach(a -> {
             Vector2d newPos = a.movePre();
             newPos = this.translatePosition(newPos);
             a.moveTo(newPos);
         });
+    }
 
-        //eat
+    private void eatGrass(List<Animal> animals){
         animalMap.values().forEach(a -> {
             Vector2d newPos = a.getPosition();
             Grass g = grassAt(newPos);
@@ -137,8 +160,9 @@ public class JungleMap extends AbstractWorldMap{
             }
             removeGrass(g);
         });
+    }
 
-        //reproduce
+    private void reproducingAnimals(List<Animal> animals){
         animals.forEach(a -> {
             Vector2d newPos = a.getPosition();
             LinkedList<Animal> list = new LinkedList<>(animalMap.get(newPos));
@@ -150,32 +174,66 @@ public class JungleMap extends AbstractWorldMap{
             Optional<Animal> bbyAnimal = Optional.ofNullable(list.get(0).merge(list.get(1)));
             bbyAnimal.ifPresent(this::place);
         });
+    }
+
+    @Override
+    public void run() {
+        //clean dead animals
+        cleanDeadAnimals();
+
+        //choose orientation
+        animalMap.values().forEach(Animal::chooseOrientation);
+
+        LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
+
+        //move
+        moveAnimals(animals);
+
+        //eat
+        eatGrass(animals);
+
+        //reproduce
+        reproducingAnimals(animals);
 
         animalMap.values().forEach(Animal::incAge);
         grassList.values().forEach(Grass::grow);
-        spawnGrassInArea(this.mapSize, this.jungleSize, 1);
+        spawnGrassInArea(this.mapSize, this.jungleSize, 2);
         spawnGrassInArea(this.jungleSize, null, 1);
         day++;
     }
 
     @Override
     public Object objectAt(Vector2d position) {
-        Object o = super.objectAt(position);
-        if(o instanceof Collection<?>){
+        Object o = animalMap.get(position);
+        if(o != null){
             LinkedList l = new LinkedList<>((Collection) o);
             if(l.size() > 0) {
-                return o;
+                return l;
             }
         }
 
         return grassAt(position);
     }
 
+    public Animal getStrongestAtPosition(Vector2d pos){
+        Object o = objectAt(pos);
+        if(o == null){
+            return null;
+        }
+
+        if(o instanceof LinkedList<?>){
+            List<Animal> anims = new LinkedList<Animal>((Collection) o);
+            return anims.stream().max(Comparator.comparing(AbstractMapElement::getEnergy)).get();
+        }
+
+        return null;
+    }
+
     public Grass grassAt(Vector2d position){
         return grassList.get(position);
     }
 
-    public int getGrassNum() {
+    public Integer getGrassNum() {
         return grassList.size();
     }
 
@@ -183,9 +241,67 @@ public class JungleMap extends AbstractWorldMap{
         grassList.remove(g.getPosition());
     }
 
+    public Integer getDay(){
+        return day;
+    }
+
+    public Integer getAvgEnergy(){
+        return (int) Math.round(animalMap.values().stream().mapToDouble(AbstractMapElement::getEnergy).average().orElse(0.0));
+    }
+
+    public Integer getAvgLifeTime(){
+        return (int) deadAnimals.stream().mapToDouble(Animal::getAge).average().orElse(0.0);
+    }
+
+    public Double getAvgKidsNum(){
+        return Math.round(animalMap.values().stream().mapToInt(Animal::getKids).average().orElse(0.0) * 100) / 100.0;
+    }
+
+    public Integer getAnimalsNum(){
+        return animalMap.size();
+    }
+
+    public Integer getDeadAnimalsNum(){
+        return deadAnimals.size();
+    }
+
+    public void addGenotypeToStats(Animal a){
+        animalGenes.put(a.getGenotype(), animalGenes.getOrDefault(a.getGenotype(), 0) + 1);
+    }
+
+    public void removeGenotypeFromStats(Animal a){
+        animalGenes.put(a.getGenotype(), animalGenes.getOrDefault(a.getGenotype(), 1) - 1);
+    }
+
+    public Genotype mostPopularGenotype(){
+        if(animalGenes.isEmpty()){
+            return new Genotype().defaultGenotype();
+        }
+
+        Map.Entry<Genotype, Integer> maxEntry = null;
+        for (Map.Entry<Genotype, Integer> entry : animalGenes.entrySet()) {
+            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+                maxEntry = entry;
+        }
+
+        return maxEntry.getKey();
+    }
+
+    public List<Animal> getDominators(){
+        Genotype best = mostPopularGenotype();
+        return animalMap.values().stream()
+                .filter(a -> a.getGenotype().equals(best))
+                .collect(Collectors.toList());
+    }
+
     @Override
-    public String toString(){
-        //return "Ilosc zwierzat: " + animalMap.size();
-        return super.toString() + "\nIlosc zwierzat: " + animalMap.size() + "\n\n";
+    public boolean isOccupied(Vector2d position) {
+        return this.objectAt(position) != null;
+    }
+
+    @Override
+    public void positionChanged(Vector2d oldPosition, Animal a){
+        this.animalMap.remove(oldPosition, a);
+        this.animalMap.put(a.getPosition(), a);
     }
 }

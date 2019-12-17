@@ -2,6 +2,10 @@ package agh.po.ewolucja;
 
 import java.util.Random;
 
+import agh.po.ewolucja.Classes.Grass;
+import agh.po.ewolucja.Classes.Rectangle;
+import agh.po.ewolucja.Classes.Vector2d;
+import agh.po.ewolucja.Map.JungleMap;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

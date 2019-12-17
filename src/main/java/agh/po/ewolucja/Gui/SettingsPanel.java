@@ -1,4 +1,7 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Gui;
+
+import agh.po.ewolucja.Config.Config;
+import agh.po.ewolucja.Gui.MapWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -129,7 +132,7 @@ public class SettingsPanel extends JPanel implements ActionListener {
         labels.put("moveEnergy", new JLabel("move cost: "));
         labels.put("plantStartEnergy", new JLabel("plant start energy: "));
         labels.put("iterations", new JLabel("iterations: "));
-        labels.put("stepTime", new JLabel("step time: "));
+        labels.put("stepTime", new JLabel("step time (ms): "));
         labels.put("startAnimals", new JLabel("start animals: "));
     }
 

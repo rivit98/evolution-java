@@ -1,8 +1,8 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Classes;
 
 import agh.po.ewolucja.Interfaces.IMapElement;
 import agh.po.ewolucja.Interfaces.IObservable;
-import agh.po.ewolucja.Interfaces.IPositionChangeObserver;
+import agh.po.ewolucja.Interfaces.IPositionChangeListener;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class AbstractMapElement implements IMapElement, IObservable {
     protected Vector2d position;
-    protected List<IPositionChangeObserver> observers = new LinkedList<>();
+    protected List<IPositionChangeListener> observers = new LinkedList<>();
     protected Double energy = 0.0;
 
     public Double getEnergy(){
@@ -38,12 +38,12 @@ public abstract class AbstractMapElement implements IMapElement, IObservable {
     public abstract Color getColor();
 
     @Override
-    public void addObserver(IPositionChangeObserver observer) {
+    public void addObserver(IPositionChangeListener observer) {
         this.observers.add(observer);
     }
 
     @Override
-    public void removeObserver(IPositionChangeObserver observer) {
+    public void removeObserver(IPositionChangeListener observer) {
         this.observers.remove(observer);
     }
 

@@ -1,4 +1,6 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Config;
+
+import agh.po.ewolucja.Classes.Vector2d;
 
 public class Config {
     public Integer mapWidth;
@@ -9,8 +11,8 @@ public class Config {
     public Integer jungleWidth;
     public Integer jungleHeight;
 
-    public Integer iterations = 1000;
-    public Integer startAnimals = 100;
+    public Integer iterations = 10000;
+    public Integer startAnimals = 40;
     public Integer stepTime = 50; //msec
     public Vector2d jungleSize = new Vector2d(0,0);
     public Vector2d mapSize = new Vector2d(0,0);

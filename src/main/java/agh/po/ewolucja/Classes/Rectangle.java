@@ -1,4 +1,4 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Classes;
 
 public class Rectangle {
     public Vector2d lowerLeft;

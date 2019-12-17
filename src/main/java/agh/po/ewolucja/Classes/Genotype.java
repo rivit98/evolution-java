@@ -1,4 +1,4 @@
-package agh.po.ewolucja;
+package agh.po.ewolucja.Classes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,7 +25,11 @@ public class Genotype {
     }
 
     public String toString(){
-        return Arrays.toString(this.genotype);
+        StringBuilder sb = new StringBuilder();
+        for(Integer i : genotype){
+            sb.append(i);
+        }
+        return sb.toString();
     }
 
     public Integer getRandom(){
@@ -109,5 +113,28 @@ public class Genotype {
         this.genotype = Arrays.stream(this.genotype).map(v -> v = rand.nextInt(8)).toArray(Integer[]::new);
         this.fix();
         Arrays.sort(this.genotype);
+    }
+
+    public Genotype defaultGenotype(){
+        Arrays.fill(genotype, 0);
+        return this;
+    }
+
+    @Override
+    public int hashCode(){
+        return Arrays.hashCode(genotype);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null){
+            return false;
+        }
+
+        if(!(o instanceof Genotype)){
+            return false;
+        }
+
+        return Arrays.equals(genotype, ((Genotype) o).genotype);
     }
 }

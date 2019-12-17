@@ -1,6 +1,9 @@
 package agh.po.ewolucja;
 
 
+import agh.po.ewolucja.Classes.Vector2d;
+import agh.po.ewolucja.Map.JungleMap;
+import agh.po.ewolucja.Map.PointsGenerator;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
