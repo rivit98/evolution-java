@@ -93,6 +93,10 @@ public class Animal extends AbstractMapElement {
         return genotype;
     }
 
+    public boolean isAlive(){
+        return getEnergy() > 0;
+    }
+
     private Double getRequiredEnergyToReproduce(){
         return map.cfg.startEnergy/2;
     }

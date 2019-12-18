@@ -24,7 +24,7 @@ public class MapWindow extends JFrame implements ActionListener {
     private final int WIDTH = 600;
     private final int HEIGHT = 700;
 
-    public MapWindow(Config c){
+    public MapWindow(Config c) {
         super("MapVisualizer");
 
         timer = new Timer(c.stepTime, this);
@@ -36,7 +36,7 @@ public class MapWindow extends JFrame implements ActionListener {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth() / 2;
-        double height = screenSize.getHeight() - 100;
+        double height = screenSize.getHeight() - 70;
 
         int xTile = (int) (width / map.getMapCorners().upperRight.x);
         int yTile = (int) (height / map.getMapCorners().upperRight.y);
@@ -48,67 +48,75 @@ public class MapWindow extends JFrame implements ActionListener {
         GridBagLayout gl = new GridBagLayout();
         setLayout(gl);
 
-        gl.rowWeights = new double[] {0.9, 0.1};
-        addPanel(renderer, 0, 9);
-        addPanel(infoPanel, 1, 1);
+        gl.rowWeights = new double[]{0.8, 0.2};
+        addPanel(renderer, 0, 2);
+        addPanel(infoPanel, 3, 1);
         pack();
     }
 
-    public void addPanel (JPanel panel, int gridy, int gridwidth) {
+    public void addPanel(JPanel panel, int gridy, int gridwidth) {
         gc.gridx = 0;
         gc.gridy = gridy;
-        gc.gridwidth = gridwidth;
-        gc.gridheight = 1;
+        gc.gridheight = gridwidth;
         gc.weightx = 1.0;
         gc.weighty = 0.0;
         gc.fill = GridBagConstraints.BOTH;
         add(panel, gc);
     }
 
-    public void updateInfo(){
+    public void updateInfo() {
         infoPanel.repaint();
     }
 
     public void start() {
-        List<Vector2d> points = new PointsGenerator(map).getPool(new Rectangle(new Vector2d(0,0), cfg.mapSize), null);
+        List<Vector2d> points = new PointsGenerator(map).getPool(new Rectangle(new Vector2d(0, 0), cfg.mapSize), null);
         Collections.shuffle(points);
         points.subList(0, Math.min(cfg.startAnimals, points.size())).forEach(v -> map.place(new Animal(map, v, cfg.startEnergy)));
 
         setVisible(true);
-        timer.start();
+        startSimulation();
     }
 
-    public void flipState(){
-        if(timer.isRunning()){
-            timer.stop();
-        }else{
-            timer.start();
+    public void flipState() {
+        if (timer.isRunning()) {
+            stopSimulation();
+        } else {
+            startSimulation();
         }
     }
 
-    public void stopSimulation(){
+    public void oneAnimalStatsUpdate(Animal a) {
+        infoPanel.oneAnimalStatsUpdate(a);
+    }
+
+    public void startSimulation() {
+        timer.start();
+        infoPanel.clearOneAnimalStats();
+    }
+
+    public void stopSimulation() {
         timer.stop();
     }
 
-    public boolean isSimulationRunning(){
+    public boolean isSimulationRunning() {
         return timer.isRunning();
     }
 
-    public void updateStats(Vector2d pos){
+    public void updateStats(Vector2d pos) {
         infoPanel.updateStats(pos);
     }
 
-    public void markDominators(){
+    public void markDominators() {
         renderer.markingDominators();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        if(src == timer){
+        if (src == timer) {
             renderer.repaint();
-            if(map.getDay().equals(cfg.iterations)){
-                timer.stop();
+            if (map.getDay().equals(cfg.iterations)) {
+                stopSimulation();
                 return;
             }
 

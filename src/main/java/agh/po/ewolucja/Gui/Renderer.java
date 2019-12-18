@@ -1,5 +1,6 @@
 package agh.po.ewolucja.Gui;
 
+import agh.po.ewolucja.Classes.Animal;
 import agh.po.ewolucja.Map.JungleMap;
 import agh.po.ewolucja.Classes.Vector2d;
 
@@ -9,18 +10,22 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+//rather bad inteface between renderer and infopanel :/
+
 public class Renderer extends JPanel implements MouseMotionListener, MouseListener {
     private MapWindow parent;
     private JungleMap map;
     private int xTile;
     private int yTile;
     private boolean markingDominators = false;
+    private Animal markedAnimal = null;
 
     public Renderer(MapWindow parent, JungleMap map){
         this.parent = parent;
         this.map = map;
         setBorder(BorderFactory.createLineBorder(new Color(0,0,0), 0));
         addMouseMotionListener(this);
+        addMouseListener(this);
     }
 
     @Override
@@ -43,7 +48,6 @@ public class Renderer extends JPanel implements MouseMotionListener, MouseListen
 
         map.animalMap.values().forEach(a -> {
             g.setColor(a.getColor());
-//            g.fillRect(a.getPosition().x * xTile, a.getPosition().y * yTile, xTile, yTile);
             g.fillOval(a.getPosition().x * xTile, a.getPosition().y * yTile, xTile, yTile);
         });
 
@@ -61,13 +65,23 @@ public class Renderer extends JPanel implements MouseMotionListener, MouseListen
         }
 
         parent.updateInfo();
+
+        if(markedAnimal != null){
+            if(markedAnimal.isAlive()){
+                g.setColor(new Color(217, 0, 212));
+                g.fillOval(markedAnimal.getPosition().x * xTile, markedAnimal.getPosition().y * yTile, xTile, yTile);
+                parent.oneAnimalStatsUpdate(markedAnimal);
+            }else{
+                markedAnimal = null;
+                parent.stopSimulation();
+            }
+        }
     }
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-//        System.out.println(e.getX());
-//        System.out.println(e.getY());
-//        System.out.println(e.getComponent().getClass().getName());
+    private Vector2d getNormalizedCoords(MouseEvent e){
+        int x = e.getX();
+        int y = getHeight() - e.getY();
+        return new Vector2d(x/xTile, y/yTile);
     }
 
     @Override
@@ -75,11 +89,8 @@ public class Renderer extends JPanel implements MouseMotionListener, MouseListen
         if(parent.isSimulationRunning()){
             return;
         }
-        int x = e.getX();
-        int y = getHeight() - e.getY();
-        Vector2d pos = new Vector2d(x/xTile, y/yTile);
-        parent.updateStats(pos);
 
+        parent.updateStats(getNormalizedCoords(e));
     }
 
     @Override
@@ -87,14 +98,15 @@ public class Renderer extends JPanel implements MouseMotionListener, MouseListen
         if(parent.isSimulationRunning()){
             return;
         }
-        int x = e.getX();
-        int y = getHeight() - e.getY();
-        Vector2d pos = new Vector2d(x/xTile, y/yTile);
-        //mark animal here
+        markedAnimal = map.getStrongestAtPosition(getNormalizedCoords(e));
+        if(markedAnimal != null){
+            this.repaint();
+        }
     }
 
     public void markingDominators(){
         markingDominators = !markingDominators;
+        repaint();
     }
 
     @Override
@@ -114,6 +126,11 @@ public class Renderer extends JPanel implements MouseMotionListener, MouseListen
 
     @Override
     public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
 
     }
 }

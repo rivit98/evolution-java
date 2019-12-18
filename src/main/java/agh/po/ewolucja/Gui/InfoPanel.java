@@ -16,17 +16,17 @@ public class InfoPanel extends JPanel implements ActionListener {
     private GridBagConstraints gc = new GridBagConstraints();
     private HashMap<String, JLabel> labels = new HashMap<>();
     private JProgressBar pb;
-    private JButton highlighterBtn = new JButton("Mark dominators");
+    private JButton highlighterBtn = new JButton("Zaznacz dominatorow");
     private JButton stoper = new JButton("Start/Stop");
     private JPanel oneAnimalInformations = new JPanel();
-
+    private JPanel highlightedAnimalInformation = new JPanel();
 
     public InfoPanel(MapWindow parent, JungleMap map){
         this.parent = parent;
         this.map = map;
         setBorder(BorderFactory.createLineBorder(new Color(0,0,0), 0));
         GridBagLayout gl = new GridBagLayout();
-        gl.columnWeights = new double[] {0.2, 0.5};
+        gl.columnWeights = new double[] {0.2, 0.5, 0.3};
         setLayout(gl);
 
         initComponents();
@@ -36,7 +36,7 @@ public class InfoPanel extends JPanel implements ActionListener {
         JPanel simulationDays = new JPanel(new FlowLayout());
         pb = new JProgressBar(0, map.cfg.iterations);
         pb.setStringPainted(true);
-        simulationDays.add(new JLabel("Progress: "));
+        simulationDays.add(new JLabel("Postep: "));
         simulationDays.add(pb);
         addPanel(simulationDays, 0, 0);
 
@@ -54,7 +54,8 @@ public class InfoPanel extends JPanel implements ActionListener {
 
         JPanel dominatingGene = new JPanel(new FlowLayout());
         labels.put("dominatingGene", new JLabel("-"));
-        dominatingGene.add(new JLabel("Dominujący gen: "));
+        dominatingGene.add(new JLabel("Domin. gen: "));
+        dominatingGene.add(new JLabel(" "));
         dominatingGene.add(labels.get("dominatingGene"));
         addPanel(dominatingGene, 0, 3);
 
@@ -88,26 +89,56 @@ public class InfoPanel extends JPanel implements ActionListener {
 
         //second column, info about one animal
         oneAnimalInformations.setLayout(new BoxLayout(oneAnimalInformations, BoxLayout.PAGE_AXIS));
+        JLabel labelka = new JLabel("Statystyki zwierzęcia pod kursorem:");
+        labelka.setForeground(Color.RED);
+        oneAnimalInformations.add(labelka);
 //        oneAnimalInformations.setLayout(new GridLayout(4, 1));
 //        oneAnimalInformations.add(new JLabel("Wybrane zwierzę"));
         labels.put("oneAnimalGenotype", new JLabel());
         oneAnimalInformations.add(new JLabel("Genotyp:"));
         oneAnimalInformations.add(labels.get("oneAnimalGenotype"));
+        oneAnimalInformations.add(new JLabel(" "));
 
         labels.put("oneAnimalEnergy", new JLabel());
         oneAnimalInformations.add(new JLabel("Energia: "));
         oneAnimalInformations.add(labels.get("oneAnimalEnergy"));
+        oneAnimalInformations.add(new JLabel(" "));
 
         labels.put("oneAnimalKids", new JLabel());
         oneAnimalInformations.add(new JLabel("Liczba dzieci: "));
         oneAnimalInformations.add(labels.get("oneAnimalKids"));
+        oneAnimalInformations.add(new JLabel(" "));
 
         labels.put("oneAnimalDescendant", new JLabel());
         oneAnimalInformations.add(new JLabel("Potomkowie: "));
         oneAnimalInformations.add(labels.get("oneAnimalDescendant"));
 
-        gc.gridheight = 5;
+        gc.gridheight = 8;
         addPanel(oneAnimalInformations, 1, 0);
+
+        highlightedAnimalInformation.setLayout(new BoxLayout(highlightedAnimalInformation, BoxLayout.PAGE_AXIS));
+
+        JLabel labelka2 = new JLabel("Statystyki wybranego zwierzęcia:");
+        labelka2.setForeground(Color.RED);
+        highlightedAnimalInformation.add(labelka2);
+        labels.put("highlightedAnimalKids", new JLabel());
+        highlightedAnimalInformation.add(new JLabel("Dzieci od czasu zaznaczenia:"));
+        highlightedAnimalInformation.add(labels.get("highlightedAnimalKids"));
+        highlightedAnimalInformation.add(new JLabel(" "));
+
+
+        labels.put("highlightedAnimalDescendant", new JLabel());
+        highlightedAnimalInformation.add(new JLabel("Potomkowie od czasu zaznaczenia:"));
+        highlightedAnimalInformation.add(labels.get("highlightedAnimalDescendant"));
+        highlightedAnimalInformation.add(new JLabel(" "));
+
+        labels.put("highlightedAnimalDeadDay", new JLabel());
+        highlightedAnimalInformation.add(new JLabel("Dzien w ktorym zdechlo:"));
+        highlightedAnimalInformation.add(labels.get("highlightedAnimalDeadDay"));
+        highlightedAnimalInformation.add(new JLabel(" "));
+
+        gc.gridheight = 8;
+        addPanel(highlightedAnimalInformation, 2, 0);
     }
 
     private void addPanel(JPanel p, int x, int y){
@@ -131,18 +162,31 @@ public class InfoPanel extends JPanel implements ActionListener {
         labels.get("avgKids").setText(map.getAvgKidsNum().toString());
     }
 
-    public void hideStats(){
+    public void clearOneAnimalStats() {
+        labels.get("oneAnimalGenotype").setText("");
+        labels.get("oneAnimalEnergy").setText("");
+        labels.get("oneAnimalKids").setText("");
+        labels.get("oneAnimalDescendant").setText("");
+    }
 
+    public void hideStats(){
+//        oneAnimalInformations.setVisible(false);
+    }
+
+    public void oneAnimalStatsUpdate(Animal a){
+        labels.get("highlightedAnimalKids").setText(a.getKids().toString());
+        labels.get("highlightedAnimalDescendant").setText(a.getDescendant().toString());
+        labels.get("highlightedAnimalDeadDay").setText(map.getDay().toString());
     }
 
     public void updateStats(Vector2d pos){
         Animal a = map.getStrongestAtPosition(pos);
         if(a != null){
             labels.get("oneAnimalGenotype").setText(a.getGenotype().toString());
-            labels.get("oneAnimalEnergy").setText(a.getEnergy().toString());
+            labels.get("oneAnimalEnergy").setText(String.valueOf(Math.round(a.getEnergy())));
             labels.get("oneAnimalKids").setText(a.getKids().toString());
             labels.get("oneAnimalDescendant").setText(a.getDescendant().toString());
-
+//            oneAnimalInformations.setVisible(true);
         }
     }
 

@@ -147,12 +147,12 @@ public class SettingsPanel extends JPanel implements ActionListener {
     }
 
     private void spawnMaps(Config c) {
-//        MapWindow m1 = new MapWindow(c);
+        MapWindow m1 = new MapWindow(c);
         MapWindow m2 = new MapWindow(c);
-//        m1.setLocation(0,0);
-//        m1.start();
+        m1.setLocation(0,0);
+        m1.start();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        m2.setLocation((screenSize.width/2)-300,0);
+        m2.setLocation((screenSize.width/2)-250,0);
         m2.start();
     }
 
