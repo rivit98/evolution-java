@@ -1,8 +1,8 @@
 package agh.po.ewolucja.Gui;
 
 import agh.po.ewolucja.Classes.Animal;
-import agh.po.ewolucja.Map.JungleMap;
 import agh.po.ewolucja.Classes.Vector2d;
+import agh.po.ewolucja.Map.JungleMap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,10 +10,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-//rather bad inteface between renderer and infopanel :/
 
 public class Renderer extends JPanel implements MouseMotionListener, MouseListener {
-    private MapWindow parent;
+    private MapWindow parent; //rather bad inteface between renderer and infopanel :/
+
     private JungleMap map;
     private int xTile;
     private int yTile;
@@ -67,10 +67,10 @@ public class Renderer extends JPanel implements MouseMotionListener, MouseListen
         parent.updateInfo();
 
         if(markedAnimal != null){
+            parent.oneAnimalStatsUpdate(markedAnimal);
             if(markedAnimal.isAlive()){
                 g.setColor(new Color(217, 0, 212));
                 g.fillOval(markedAnimal.getPosition().x * xTile, markedAnimal.getPosition().y * yTile, xTile, yTile);
-                parent.oneAnimalStatsUpdate(markedAnimal);
             }else{
                 markedAnimal = null;
                 parent.stopSimulation();

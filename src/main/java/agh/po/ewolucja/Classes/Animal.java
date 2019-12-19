@@ -7,16 +7,16 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.stream.Stream;
 
 public class Animal extends AbstractMapElement {
     private final JungleMap map;
+    private final List<Animal> descendentsList = new LinkedList<>();
 
+    private Genotype genotype;
     private Integer age = 0;
     private Integer kids = 0;
-    private Genotype genotype;
     private MapDirection orientation;
-    private List<Animal> kidsList = new LinkedList<>();
 
     public Animal(JungleMap map){
         this.map = map;
@@ -56,13 +56,21 @@ public class Animal extends AbstractMapElement {
         return kids;
     }
 
-    public void incKids(Animal a){
-        kidsList.add(a);
+    public void incKids(){
         kids++;
     }
 
-    public Integer getDescendant(){
-        return kidsList.size(); //for now  TODO:change this
+    public Integer getDescendants(){
+        return (int) allChildren().count();
+    }
+
+    private Stream<Animal> allChildren() {
+//        return descendentsList
+//                        .stream()
+//                        .filter(animal1 -> !hashSet.contains(animal1))
+//                        .flatMap(animal3 -> animal3.allChildren(hashSet));
+        //one our here
+        return Stream.concat(descendentsList.stream(), descendentsList.stream().flatMap(a -> a.allChildren())).distinct();
     }
 
     public String toString(){
@@ -121,8 +129,10 @@ public class Animal extends AbstractMapElement {
 
 
         Animal newAnimal = new Animal(a1.map, calcPos.get(), newEnergy, a1.genotype.merge(a2.genotype));
-        a1.incKids(newAnimal);
-        a2.incKids(newAnimal);
+        a1.incKids();
+        a2.incKids();
+        a1.descendentsList.add(newAnimal);
+        a2.descendentsList.add(newAnimal);
 
         return newAnimal;
     }

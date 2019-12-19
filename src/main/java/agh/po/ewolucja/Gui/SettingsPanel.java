@@ -1,7 +1,6 @@
 package agh.po.ewolucja.Gui;
 
 import agh.po.ewolucja.Config.Config;
-import agh.po.ewolucja.Gui.MapWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +15,7 @@ public class SettingsPanel extends JPanel implements ActionListener {
     private HashMap<String, JTextField> textFields = new HashMap<>();
     private HashMap<String, JPanel> panels = new HashMap<>();
     private Config defaultConfig;
-
     private JButton startButton;
-
 
     public SettingsPanel(Config c){
         defaultConfig = c;
@@ -152,7 +149,7 @@ public class SettingsPanel extends JPanel implements ActionListener {
         m1.setLocation(0,0);
         m1.start();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        m2.setLocation((screenSize.width/2)-250,0);
+        m2.setLocation((screenSize.width/2)-200,0);
         m2.start();
     }
 

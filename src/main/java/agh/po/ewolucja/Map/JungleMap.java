@@ -140,7 +140,7 @@ public class JungleMap implements IWorldMap, IPositionChangeListener {
         });
     }
 
-    private void eatGrass(List<Animal> animals){
+    private void eatGrass(){
         animalMap.values().forEach(a -> {
             Vector2d newPos = a.getPosition();
             Grass g = grassAt(newPos);
@@ -186,13 +186,8 @@ public class JungleMap implements IWorldMap, IPositionChangeListener {
 
         LinkedList<Animal> animals = new LinkedList<>(animalMap.values());
 
-        //move
         moveAnimals(animals);
-
-        //eat
-        eatGrass(animals);
-
-        //reproduce
+        eatGrass();
         reproducingAnimals(animals);
 
         animalMap.values().forEach(Animal::incAge);

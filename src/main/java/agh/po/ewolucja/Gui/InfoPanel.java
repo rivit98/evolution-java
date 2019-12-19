@@ -1,8 +1,9 @@
 package agh.po.ewolucja.Gui;
 
 import agh.po.ewolucja.Classes.Animal;
-import agh.po.ewolucja.Map.JungleMap;
+import agh.po.ewolucja.Classes.Genotype;
 import agh.po.ewolucja.Classes.Vector2d;
+import agh.po.ewolucja.Map.JungleMap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +18,7 @@ public class InfoPanel extends JPanel implements ActionListener {
     private HashMap<String, JLabel> labels = new HashMap<>();
     private JProgressBar pb;
     private JButton highlighterBtn = new JButton("Zaznacz dominatorow");
+    private JButton exportButton = new JButton("Zapisz statystyki");
     private JButton stoper = new JButton("Start/Stop");
     private JPanel oneAnimalInformations = new JPanel();
     private JPanel highlightedAnimalInformation = new JPanel();
@@ -85,15 +87,18 @@ public class InfoPanel extends JPanel implements ActionListener {
         JPanel startStop = new JPanel(new FlowLayout());
         stoper.addActionListener(this);
         startStop.add(stoper);
-        addPanel(startStop, 0, 8);
+        addPanel(startStop, 0, 9);
+
+        JPanel btnSave = new JPanel(new FlowLayout());
+        exportButton.addActionListener(this);
+        btnSave.add(exportButton);
+        addPanel(btnSave, 0, 8);
 
         //second column, info about one animal
         oneAnimalInformations.setLayout(new BoxLayout(oneAnimalInformations, BoxLayout.PAGE_AXIS));
         JLabel labelka = new JLabel("Statystyki zwierzęcia pod kursorem:");
         labelka.setForeground(Color.RED);
         oneAnimalInformations.add(labelka);
-//        oneAnimalInformations.setLayout(new GridLayout(4, 1));
-//        oneAnimalInformations.add(new JLabel("Wybrane zwierzę"));
         labels.put("oneAnimalGenotype", new JLabel());
         oneAnimalInformations.add(new JLabel("Genotyp:"));
         oneAnimalInformations.add(labels.get("oneAnimalGenotype"));
@@ -121,11 +126,16 @@ public class InfoPanel extends JPanel implements ActionListener {
         JLabel labelka2 = new JLabel("Statystyki wybranego zwierzęcia:");
         labelka2.setForeground(Color.RED);
         highlightedAnimalInformation.add(labelka2);
+
+        labels.put("highlightedAnimalEnergy", new JLabel());
+        highlightedAnimalInformation.add(new JLabel("Energia:"));
+        highlightedAnimalInformation.add(labels.get("highlightedAnimalEnergy"));
+        highlightedAnimalInformation.add(new JLabel(" "));
+
         labels.put("highlightedAnimalKids", new JLabel());
         highlightedAnimalInformation.add(new JLabel("Dzieci od czasu zaznaczenia:"));
         highlightedAnimalInformation.add(labels.get("highlightedAnimalKids"));
         highlightedAnimalInformation.add(new JLabel(" "));
-
 
         labels.put("highlightedAnimalDescendant", new JLabel());
         highlightedAnimalInformation.add(new JLabel("Potomkowie od czasu zaznaczenia:"));
@@ -153,13 +163,21 @@ public class InfoPanel extends JPanel implements ActionListener {
         super.paintComponent(g);
         setSize(parent.getWidth(), getHeight());
 
+        Genotype dominGene = map.mostPopularGenotype();
+        Integer avgE = map.getAvgEnergy();
+        Integer avgL = map.getAvgLifeTime();
+        Double avgK = map.getAvgKidsNum();
         pb.setValue(map.getDay());
         labels.get("animalsNum").setText("" + map.getAnimalsNum().toString() + " (martwych: " + map.getDeadAnimalsNum().toString() + ")");
         labels.get("grassNum").setText(map.getGrassNum().toString());
-        labels.get("dominatingGene").setText(map.mostPopularGenotype().toString());
-        labels.get("avgEnergy").setText(map.getAvgEnergy().toString());
-        labels.get("avgLifeTime").setText(map.getAvgLifeTime().toString());
-        labels.get("avgKids").setText(map.getAvgKidsNum().toString());
+        labels.get("dominatingGene").setText(dominGene.toString());
+        labels.get("avgEnergy").setText(avgE.toString());
+        labels.get("avgLifeTime").setText(avgL.toString());
+        labels.get("avgKids").setText(avgK.toString());
+
+        if(parent.statsManager.getLastDay() != map.getDay()){
+            parent.statsManager.addNewStat(map.getDay(), map.getAnimalsNum(), map.getGrassNum(), dominGene, avgE, avgL, avgK);
+        }
     }
 
     public void clearOneAnimalStats() {
@@ -169,14 +187,16 @@ public class InfoPanel extends JPanel implements ActionListener {
         labels.get("oneAnimalDescendant").setText("");
     }
 
-    public void hideStats(){
-//        oneAnimalInformations.setVisible(false);
-    }
-
     public void oneAnimalStatsUpdate(Animal a){
         labels.get("highlightedAnimalKids").setText(a.getKids().toString());
-        labels.get("highlightedAnimalDescendant").setText(a.getDescendant().toString());
-        labels.get("highlightedAnimalDeadDay").setText(map.getDay().toString());
+        labels.get("highlightedAnimalDescendant").setText(a.getDescendants().toString());
+        if(!a.isAlive()){
+            labels.get("highlightedAnimalDeadDay").setText(map.getDay().toString());
+            labels.get("highlightedAnimalEnergy").setText("");
+        }else{
+            labels.get("highlightedAnimalDeadDay").setText("");
+            labels.get("highlightedAnimalEnergy").setText(String.valueOf(Math.round(a.getEnergy() * 100) / 100.0));
+        }
     }
 
     public void updateStats(Vector2d pos){
@@ -185,7 +205,7 @@ public class InfoPanel extends JPanel implements ActionListener {
             labels.get("oneAnimalGenotype").setText(a.getGenotype().toString());
             labels.get("oneAnimalEnergy").setText(String.valueOf(Math.round(a.getEnergy())));
             labels.get("oneAnimalKids").setText(a.getKids().toString());
-            labels.get("oneAnimalDescendant").setText(a.getDescendant().toString());
+            labels.get("oneAnimalDescendant").setText(a.getDescendants().toString());
 //            oneAnimalInformations.setVisible(true);
         }
     }
@@ -193,10 +213,11 @@ public class InfoPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        hideStats();
         if(src == stoper){
             parent.flipState();
-            hideStats();
+        }else if(src == exportButton){
+            parent.stopSimulation();
+            parent.saveStats();
         }else{
             parent.markDominators();
         }

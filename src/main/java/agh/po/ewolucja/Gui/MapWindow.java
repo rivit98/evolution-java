@@ -1,16 +1,22 @@
 package agh.po.ewolucja.Gui;
 
 import agh.po.ewolucja.Classes.Animal;
+import agh.po.ewolucja.Classes.Rectangle;
+import agh.po.ewolucja.Classes.Stats;
 import agh.po.ewolucja.Classes.Vector2d;
 import agh.po.ewolucja.Config.Config;
-import agh.po.ewolucja.Classes.Rectangle;
 import agh.po.ewolucja.Map.JungleMap;
 import agh.po.ewolucja.Map.PointsGenerator;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,8 +27,7 @@ public class MapWindow extends JFrame implements ActionListener {
     private agh.po.ewolucja.Gui.Renderer renderer;
     private InfoPanel infoPanel;
     private GridBagConstraints gc = new GridBagConstraints();
-    private final int WIDTH = 600;
-    private final int HEIGHT = 700;
+    public Stats statsManager = new Stats();
 
     public MapWindow(Config c) {
         super("MapVisualizer");
@@ -48,7 +53,7 @@ public class MapWindow extends JFrame implements ActionListener {
         GridBagLayout gl = new GridBagLayout();
         setLayout(gl);
 
-        gl.rowWeights = new double[]{0.8, 0.2};
+        gl.rowWeights = new double[]{0.9, 0.1};
         addPanel(renderer, 0, 2);
         addPanel(infoPanel, 3, 1);
         pack();
@@ -62,6 +67,23 @@ public class MapWindow extends JFrame implements ActionListener {
         gc.weighty = 0.0;
         gc.fill = GridBagConstraints.BOTH;
         add(panel, gc);
+    }
+
+    public void saveStats() {
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        jfc.setMultiSelectionEnabled(false);
+        int returnValue = jfc.showSaveDialog(null);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = jfc.getSelectedFile();
+
+            try(BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsolutePath()))){
+                statsManager.dumpHistory(writer);
+                JOptionPane.showMessageDialog(null, "Staty zapisane", "EvolutionSimulator", 1);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Blad zapisu", "EvolutionSimulator", 1);
+            }
+        }
     }
 
     public void updateInfo() {
