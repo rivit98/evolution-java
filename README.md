@@ -10,7 +10,7 @@ Wait for the end of the import and run program.
 Or use .jar version  
 [click](https://github.com/rivit98/evolution_java/releases)
 ```
-java -jar ./jar_file.jar
+java -jar ./jar_file.jar [startAnimals] [path to json]
 ```
 
 
