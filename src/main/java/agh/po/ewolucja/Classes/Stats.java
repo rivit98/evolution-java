@@ -29,13 +29,11 @@ public class Stats {
 
     public void dumpHistory(BufferedWriter writer) throws IOException {
         StringBuilder stringBuilder = new StringBuilder(8000);
-        StatsEntry temp;
         StatsEntry sum = new StatsEntry();
         int i=0;
 
         for (StatsEntry statsEntry : statsEntries) {
-            temp = statsEntry;
-            sum = sum.add(temp);
+            sum = sum.add(statsEntry);
             i++;
             stringBuilder.append("Dzień: ");
             stringBuilder.append(i);
