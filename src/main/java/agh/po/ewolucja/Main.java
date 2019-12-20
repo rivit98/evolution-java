@@ -9,10 +9,9 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args){
         Config c;
-        if(args.length == 3){
-            c = new ConfigParser().parse(args[2]);
-            c.iterations = Integer.parseInt(args[0]);
-            c.startAnimals = Integer.parseInt(args[1]);
+        if(args.length == 2){
+            c = new ConfigParser().parse(args[1]);
+            c.startAnimals = Integer.parseInt(args[0]);
         }else{
             c = new ConfigParser().parseDefault();
         }
