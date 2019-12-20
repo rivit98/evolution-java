@@ -217,7 +217,7 @@ public class JungleMap implements IWorldMap, IPositionChangeListener {
         }
 
         if(o instanceof LinkedList<?>){
-            List<Animal> anims = new LinkedList<Animal>((Collection) o);
+            List<Animal> anims = new LinkedList<>((Collection) o);
             return anims.stream().max(Comparator.comparing(AbstractMapElement::getEnergy)).get();
         }
 
