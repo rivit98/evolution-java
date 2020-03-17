@@ -1,7 +1,13 @@
 # Generator ewolucyjny
-[project topic](https://github.com/apohllo/obiektowe-lab/tree/master/lab8)
+[Project topic](./media/topic.md)
 
+## Demo
+[YouTube](https://www.youtube.com/watch?v=KZPzAEUmVhA)
 
+![Img1](./media/img1.png)
+![Img2](./media/img2.png)
+
+## Import
 Import as maven project:
 File -> Open -> *search folder* -> select pom.xml -> 'open as project'  
 In case of maven asks you to enable auto-import modules -> select *yes*  
